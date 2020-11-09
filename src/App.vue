@@ -12,6 +12,7 @@
 <script>
 import HomePage from './components/HomePage'
 import LoginPage from './components/LoginPage'
+import axios from './config/axios'
 
 export default {
     name: 'App',
