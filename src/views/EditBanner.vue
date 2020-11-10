@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: 'RegisterPage'
+  name: 'Edit Banner'
 }
 </script>
 
