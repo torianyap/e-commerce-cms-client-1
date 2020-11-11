@@ -7,6 +7,7 @@ import EditProductPage from '../views/EditProduct.vue'
 import BannerPage from '../views/BannerPage.vue'
 import AddBannerPage from '../views/AddBanner.vue'
 import EditBannerPage from '../views/EditBanner.vue'
+import NotFound from '../views/NotFound.vue'
 
 Vue.use(VueRouter)
 
@@ -45,6 +46,11 @@ const routes = [
     path: '/editBanner/:id',
     name: 'EditBanner',
     component: EditBannerPage
+  },
+  {
+    path: '*',
+    name: 'NotFound',
+    component: NotFound
   }
 ]
 

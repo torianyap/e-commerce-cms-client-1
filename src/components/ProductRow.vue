@@ -7,7 +7,7 @@
     <td>{{ product.stock }} pcs</td>
     <td>
       <button @click="toEditPage(product.id)" class="btn btn-black shadow mb-2">Edit</button> <br>
-      <button @click="deleteProduct(product.id)" class="btn btn-red shadow-lg">Delete</button>
+      <button @click="deleteProduct(product.id)" class="btn btn-del shadow-lg">Delete</button>
     </td>
   </tr>
 </template>
@@ -38,7 +38,7 @@ export default {
   color: white;
   background-color: #353030;
 }
-.btn-red{
+.btn-del{
   color: white;
   background-color: #E3403A;
 }

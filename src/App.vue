@@ -5,11 +5,14 @@
         <router-link v-show="!loggedIn" class="navbar-brand text-light" to="/">Login</router-link>
         <div>
           <router-link v-show="loggedIn" class="navbar-brand text-light" to="/dashboard">Dashboard</router-link>
-          <router-link v-show="loggedIn" class="navbar-brand text-light" to="/addProduct">Add Product</router-link>
-        </div>
-        <div class="ml-3">
           <router-link v-show="loggedIn" class="navbar-brand text-light" to="/banners">Banners</router-link>
-          <router-link v-show="loggedIn" class="navbar-brand text-light" to="/addBanner">Add Banner</router-link>
+        </div>
+        <div class="nav-item dropdown">
+          <a v-show="loggedIn" class="navbar-brand dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Add</a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <router-link class="dropdown-item" to="/addProduct">Add Product</router-link>
+            <router-link class="dropdown-item" to="/addBanner">Add Banner</router-link>
+          </div>
         </div>
       </div>
       <div>
@@ -23,25 +26,24 @@
 <script>
 export default {
   name: 'App',
-  data () {
-    return {
-      loggedIn: false
-    }
-  },
   methods: {
     logout () {
       localStorage.clear()
       this.$router.push({ name: 'Login' })
-      this.loggedIn = false
+      this.$store.commit('loggedIn', false)
+    }
+  },
+  computed: {
+    loggedIn () {
+      return this.$store.state.loggedIn
     }
   },
   created () {
     const token = localStorage.getItem('access_token')
     if (token) {
-      this.$router.push({ name: 'Dashboard' })
-      this.loggedIn = true
+      this.$store.commit('loggedIn', true)
     } else {
-      this.loggedIn = false
+      this.$store.commit('loggedIn', false)
       this.$router.push({ name: 'Login' })
     }
   }

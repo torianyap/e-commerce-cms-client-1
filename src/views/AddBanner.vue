@@ -2,11 +2,12 @@
   <div class="container-fluid" style="margin-top: 4em">
     <form
       @submit.prevent="addBanner"
-      class="form-signin bg-dark text-light rounded shadow-lg text-center"
+      class="form-signin bg-light text-dark rounded shadow-lg text-center"
     >
-      <h3>Add A New Banner</h3> <br>
+      <h3><strong>Add A New Banner</strong></h3> <br>
+      <img src="../assets/edit.png" alt="edit" width="100%">
       <div class="form-group">
-        <label for="banner_url">Banner</label>
+        <label for="banner_url">Banner Link</label>
         <input
           v-model="banner.image_url"
           type="url"
@@ -30,7 +31,19 @@
 </template>
 
 <script>
-import axios from '../config/axios'
+import Swal from 'sweetalert2'
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
 
 export default {
   name: 'AddBanner',
@@ -44,19 +57,19 @@ export default {
   },
   methods: {
     addBanner () {
-      const token = localStorage.getItem('access_token')
-      axios({
-        method: 'POST',
-        url: '/banners',
-        headers: {
-          access_token: token
-        }
-      })
+      this.$store.dispatch('addBanner', this.banner)
         .then(({ data }) => {
           this.$router.push({ name: 'BannerPage' })
+          Toast.fire({
+            icon: 'success',
+            title: 'Banner has been added'
+          })
         })
-        .catch(err => {
-          console.log(err)
+        .catch(({ response }) => {
+          Swal.fire({
+            icon: 'error',
+            text: response.data.msg
+          })
         })
     }
   }

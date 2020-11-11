@@ -57,7 +57,19 @@
 </template>
 
 <script>
-import axios from '../config/axios'
+import Swal from 'sweetalert2'
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
 
 export default {
   name: 'AddProduct',
@@ -73,20 +85,20 @@ export default {
   },
   methods: {
     addProduct () {
-      const token = localStorage.getItem('access_token')
-      axios({
-        method: 'POST',
-        url: '/products',
-        headers: {
-          access_token: token
-        },
-        data: this.product
-      })
+      this.$store.dispatch('addProduct', this.product)
         .then(({ data }) => {
           this.$router.push({ name: 'Dashboard' })
+          Toast.fire({
+            icon: 'success',
+            title: `${data.name} has been added`
+          })
         })
         .catch(err => {
-          console.log(err)
+          Swal.fire({
+            icon: 'error',
+            title: 'Something Went Wrong..',
+            text: err.response.data.msg
+          })
         })
     }
   }

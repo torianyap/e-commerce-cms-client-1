@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import axios from '../config/axios'
+import Swal from 'sweetalert2'
 
 export default {
   name: 'EditProduct',
@@ -68,38 +68,38 @@ export default {
   },
   methods: {
     editProduct () {
-      const id = +this.$route.params.id
-      const token = localStorage.getItem('access_token')
-      axios({
-        method: 'PUT',
-        url: `/products/${id}`,
-        headers: {
-          access_token: token
-        },
-        data: this.product
-      })
+      const payload = {
+        id: +this.$route.params.id,
+        product: this.product
+      }
+      this.$store.dispatch('editProduct', payload)
         .then(({ data }) => {
           this.$router.push({ name: 'Dashboard' })
         })
-        .catch(err => {
-          console.log(err)
+        .catch(({ response }) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Something Went Wrong..',
+            text: response.data.msg
+          })
         })
     },
     fetchProductById () {
       const id = +this.$route.params.id
-      const token = localStorage.getItem('access_token')
-      axios({
-        method: 'GET',
-        url: `/products/${id}`,
-        headers: {
-          access_token: token
-        }
-      })
+      this.$store.dispatch('fetchProductById', id)
         .then(({ data }) => {
           this.product = data
         })
-        .catch(err => {
-          console.log(err)
+        .catch(({ response }) => {
+          if (response.status === 404) {
+            this.$router.push({ name: 'NotFound' })
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Something Went Wrong..',
+              text: response.data.msg
+            })
+          }
         })
     }
   },

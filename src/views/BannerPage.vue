@@ -23,51 +23,51 @@
 
 <script>
 import BannerRow from '../components/BannerRow'
-import axios from '../config/axios'
+import Swal from 'sweetalert2'
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
 
 export default {
   name: 'BannerPage',
-  data () {
-    return {
-      banners: []
-    }
-  },
   methods: {
     fetchBanners () {
-      const token = localStorage.getItem('access_token')
-      axios({
-        method: 'GET',
-        url: '/banners',
-        headers: {
-          access_token: token
-        }
-      })
-        .then(({ data }) => {
-          this.banners = data
-        })
-        .catch(err => {
-          console.log(err)
-        })
+      this.$store.dispatch('fetchBanners')
     },
     deleteBanner (id) {
-      const token = localStorage.getItem('access_token')
-      axios({
-        method: 'DELETE',
-        url: `/banners/${+id}`,
-        headers: {
-          access_token: token
-        }
-      })
+      this.$store.dispatch('deleteBanner', id)
         .then(({ data }) => {
           this.fetchBanners()
+          Toast.fire({
+            icon: 'success',
+            title: data.msg
+          })
         })
-        .catch(err => {
-          console.log(err)
+        .catch(({ response }) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Something Went Wrong..',
+            text: response.data.msg
+          })
         })
     }
   },
   components: {
     BannerRow
+  },
+  computed: {
+    banners () {
+      return this.$store.state.banners
+    }
   },
   created () {
     this.fetchBanners()

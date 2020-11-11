@@ -33,7 +33,19 @@
 </template>
 
 <script>
-import axios from '../config/axios'
+import Swal from 'sweetalert2'
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
 
 export default {
   name: 'LoginPage',
@@ -47,20 +59,28 @@ export default {
   },
   methods: {
     loginAdmin () {
-      axios({
-        method: 'POST',
-        url: '/login/admin',
-        data: this.admin
-      })
+      const payload = this.admin
+      this.$store.dispatch('loginAdmin', payload)
         .then(({ data }) => {
           localStorage.setItem('access_token', data.access_token)
-          localStorage.setItem('user', data.user)
           this.$router.push({ name: 'Dashboard' })
+          Toast.fire({
+            icon: 'success',
+            title: 'Welcome admin!'
+          })
+          this.$store.commit('loggedIn', true)
         })
         .catch(err => {
-          console.log(err)
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: err.response.data.msg
+          })
         })
     }
+  },
+  beforeRouteEnter (to, from, next) {
+    if (from.name !== 'Login') next()
   }
 }
 

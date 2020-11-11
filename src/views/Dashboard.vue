@@ -1,6 +1,6 @@
 <template>
   <div class="container-fluid mt-5">
-    <h2 class="text-center"><b><strong>Dashboard</strong></b></h2>
+    <h2 class="text-center"><b><strong>Products</strong></b></h2>
     <table class="table table-borderless my-4">
       <thead class="thead-dark">
         <th scope="col">No.</th>
@@ -24,55 +24,57 @@
 </template>
 
 <script>
-import axios from '../config/axios'
+import Swal from 'sweetalert2'
 import ProductRow from '../components/ProductRow'
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
 
 export default {
   name: 'Home',
-  data () {
-    return {
-      products: []
-    }
-  },
   components: {
     ProductRow
   },
   methods: {
     fetchProducts () {
-      const token = localStorage.getItem('access_token')
-      axios({
-        method: 'GET',
-        url: '/products',
-        headers: {
-          access_token: token
-        }
-      })
-        .then(({ data }) => {
-          this.products = data
-        })
-        .catch(err => {
-          console.log(err)
-        })
+      this.$store.dispatch('fetchProducts')
     },
     deleteProduct (id) {
-      const token = localStorage.getItem('access_token')
-      axios({
-        method: 'DELETE',
-        url: `/products/${+id}`,
-        headers: {
-          access_token: token
-        }
-      })
+      this.$store.dispatch('deleteProduct', id)
         .then(({ data }) => {
           this.fetchProducts()
+          Toast.fire({
+            icon: 'success',
+            title: data.msg
+          })
         })
         .catch(err => {
-          console.log(err)
+          Swal.fire({
+            icon: 'error',
+            title: err.response.data.msg
+          })
         })
+    }
+  },
+  computed: {
+    products () {
+      return this.$store.state.products
     }
   },
   created () {
     this.fetchProducts()
+  },
+  beforeRouteEnter (to, from, next) {
+    if (from.name !== 'Dashboard') next()
   }
 }
 </script>
