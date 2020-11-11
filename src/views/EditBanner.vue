@@ -46,7 +46,7 @@ const Toast = Swal.mixin({
 })
 
 export default {
-  name: 'Edit Banner',
+  name: 'EditBanner',
   data () {
     return {
       banner: {}
@@ -84,13 +84,21 @@ export default {
             title: 'Banner successfully updated'
           })
         })
-        .catch(({ response }) => {
+        .catch((err) => {
+          if (err.response) {
+            this.$store.commit('errorChange', err.response.data.msg)
+          }
           Swal.fire({
             icon: 'error',
             title: 'Something Went Wrong..',
-            text: response.data.msg
+            text: this.errorNotification
           })
         })
+    }
+  },
+  computed: {
+    errorNotification () {
+      return this.$store.state.errorNotification
     }
   },
   created () {

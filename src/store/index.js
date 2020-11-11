@@ -8,7 +8,8 @@ export default new Vuex.Store({
   state: {
     products: [],
     banners: [],
-    loggedIn: false
+    loggedIn: false,
+    errorNotification: ''
   },
   mutations: {
     setProducts (state, payload) {
@@ -19,6 +20,9 @@ export default new Vuex.Store({
     },
     loggedIn (state, payload) {
       state.loggedIn = payload
+    },
+    errorChange (state, payload) {
+      state.errorNotification = payload
     }
   },
   actions: {
@@ -67,25 +71,36 @@ export default new Vuex.Store({
     },
     addProduct (context, payload) {
       const token = localStorage.getItem('access_token')
-      return axios({
-        method: 'POST',
-        url: '/products',
-        headers: {
-          access_token: token
-        },
-        data: payload
-      })
+      if (+payload.stock >= 0 && +payload.price >= 0) {
+        return axios({
+          method: 'POST',
+          url: '/products',
+          headers: {
+            access_token: token
+          },
+          data: payload
+        })
+      } else {
+        context.commit('errorChange', 'stock or price is a minus')
+        return Promise.reject(new Error('stock or price is a minus'))
+      }
     },
     editProduct (context, payload) {
+      console.log(payload)
       const token = localStorage.getItem('access_token')
-      return axios({
-        method: 'PUT',
-        url: `/products/${payload.id}`,
-        headers: {
-          access_token: token
-        },
-        data: payload.product
-      })
+      if (+payload.product.stock >= 0 && +payload.product.price >= 0) {
+        return axios({
+          method: 'PUT',
+          url: `/products/${payload.id}`,
+          headers: {
+            access_token: token
+          },
+          data: payload.product
+        })
+      } else {
+        context.commit('errorChange', 'stock or price is a minus')
+        return Promise.reject(new Error('stock or price is a minus'))
+      }
     },
     fetchBanners (context) {
       const token = localStorage.getItem('access_token')

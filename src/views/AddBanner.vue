@@ -65,12 +65,21 @@ export default {
             title: 'Banner has been added'
           })
         })
-        .catch(({ response }) => {
+        .catch((err) => {
+          if (err.response) {
+            this.$store.commit('errorChange', err.response.data.msg)
+          }
           Swal.fire({
             icon: 'error',
-            text: response.data.msg
+            title: 'Something Went Wrong..',
+            text: this.errorNotification
           })
         })
+    }
+  },
+  computed: {
+    errorNotification () {
+      return this.$store.state.errorNotification
     }
   }
 }
@@ -83,5 +92,9 @@ export default {
 
 .btn-red:hover{
   background-color: #1ccf1ccc;
+}
+
+label{
+  font-weight: bold;
 }
 </style>

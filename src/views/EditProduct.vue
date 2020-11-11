@@ -76,11 +76,14 @@ export default {
         .then(({ data }) => {
           this.$router.push({ name: 'Dashboard' })
         })
-        .catch(({ response }) => {
+        .catch((err) => {
+          if (err.response) {
+            this.$store.commit('errorChange', err.response.data.msg)
+          }
           Swal.fire({
             icon: 'error',
             title: 'Something Went Wrong..',
-            text: response.data.msg
+            text: this.errorNotification
           })
         })
     },
@@ -101,6 +104,11 @@ export default {
             })
           }
         })
+    }
+  },
+  computed: {
+    errorNotification () {
+      return this.$store.state.errorNotification
     }
   },
   created () {

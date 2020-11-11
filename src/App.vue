@@ -1,42 +1,17 @@
 <template>
   <div id="app">
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark shadow" style="justify-content: space-between;" id="nav">
-      <div class="d-flex justify-content-center">
-        <router-link v-show="!loggedIn" class="navbar-brand text-light" to="/">Login</router-link>
-        <div>
-          <router-link v-show="loggedIn" class="navbar-brand text-light" to="/dashboard">Dashboard</router-link>
-          <router-link v-show="loggedIn" class="navbar-brand text-light" to="/banners">Banners</router-link>
-        </div>
-        <div class="nav-item dropdown">
-          <a v-show="loggedIn" class="navbar-brand dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Add</a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <router-link class="dropdown-item" to="/addProduct">Add Product</router-link>
-            <router-link class="dropdown-item" to="/addBanner">Add Banner</router-link>
-          </div>
-        </div>
-      </div>
-      <div>
-        <a v-show="loggedIn" @click.prevent="logout" href="#" class="navbar-brand text-danger"><i class="fas fa-power-off mr-2"></i>Logout</a>
-      </div>
-    </nav>
+    <NavBar/>
     <router-view/>
   </div>
 </template>
 
 <script>
+import NavBar from './components/NavBar'
+
 export default {
   name: 'App',
-  methods: {
-    logout () {
-      localStorage.clear()
-      this.$router.push({ name: 'Login' })
-      this.$store.commit('loggedIn', false)
-    }
-  },
-  computed: {
-    loggedIn () {
-      return this.$store.state.loggedIn
-    }
+  components: {
+    NavBar
   },
   created () {
     const token = localStorage.getItem('access_token')
@@ -55,14 +30,5 @@ export default {
   font-family: 'Varela Round', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-#nav a {
-  font-weight: bold;
-  font-size: 18px;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
 }
 </style>

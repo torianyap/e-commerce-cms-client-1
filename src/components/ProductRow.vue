@@ -2,7 +2,7 @@
   <tr>
     <th scope="row">{{ index + 1 }}</th>
     <td>{{ product.name }}</td>
-    <td><img :src="product.image_url" alt="#" width="300px" height="250px" class="ml-5"></td>
+    <td><img :src="product.image_url" alt="#" width="150px" height="150px" class="ml-5"></td>
     <td>Rp. {{ toCurrency }}</td>
     <td>{{ product.stock }} pcs</td>
     <td>
@@ -20,13 +20,16 @@ export default {
       this.$router.push({ name: 'EditProduct', params: { id } })
     },
     deleteProduct (id) {
-      this.$emit('deleteProduct', id)
+      const result = confirm('Want to delete this product?')
+      if (result) {
+        this.$emit('deleteProduct', id)
+      }
     }
   },
   props: ['product', 'index'],
   computed: {
     toCurrency () {
-      const currency = new Intl.NumberFormat('id', { maximumSignificantDigits: 2 }).format(this.product.price)
+      const currency = new Intl.NumberFormat('id').format(this.product.price)
       return currency
     }
   }
@@ -41,5 +44,8 @@ export default {
 .btn-del{
   color: white;
   background-color: #E3403A;
+}
+img {
+  object-fit: contain;
 }
 </style>
