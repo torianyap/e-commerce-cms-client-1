@@ -3,7 +3,7 @@
     <th scope="row">{{ index + 1 }}</th>
     <td>{{ product.name }}</td>
     <td><img :src="product.image_url" alt="#" width="200px" ></td>
-    <td>Rp. {{ toCurrency }}</td>
+    <td>{{ toCurrency }}</td>
     <td>{{ product.stock }} pcs</td>
     <td>
       <button @click="toEditPage(product.id)" class="btn btn-black shadow mb-2">Edit</button> <br>
@@ -26,7 +26,7 @@ export default {
   props: ['product', 'index'],
   computed: {
     toCurrency () {
-      const currency = new Intl.NumberFormat('id').format(this.product.price)
+      const currency = new Intl.NumberFormat('id', { style: 'currency', currency: 'IDR' }).format(this.product.price)
       return currency
     }
   }
