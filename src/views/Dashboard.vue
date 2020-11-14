@@ -26,18 +26,7 @@
 <script>
 import Swal from 'sweetalert2'
 import ProductRow from '../components/ProductRow'
-
-const Toast = Swal.mixin({
-  toast: true,
-  position: 'top-end',
-  showConfirmButton: false,
-  timer: 3000,
-  timerProgressBar: true,
-  didOpen: (toast) => {
-    toast.addEventListener('mouseenter', Swal.stopTimer)
-    toast.addEventListener('mouseleave', Swal.resumeTimer)
-  }
-})
+import Toast from '../config/swal'
 
 export default {
   name: 'Home',
@@ -49,19 +38,30 @@ export default {
       this.$store.dispatch('fetchProducts')
     },
     deleteProduct (id) {
-      this.$store.dispatch('deleteProduct', id)
-        .then(({ data }) => {
-          this.fetchProducts()
-          Toast.fire({
-            icon: 'success',
-            title: data.msg
-          })
-        })
-        .catch(err => {
-          Swal.fire({
-            icon: 'error',
-            title: err.response.data.msg
-          })
+      Swal.fire({
+        icon: 'warning',
+        title: 'Are You Sure ?',
+        text: 'This product will be deleted.',
+        showCancelButton: true,
+        confirmButtonText: 'Delete'
+      })
+        .then((res) => {
+          if (res.isConfirmed) {
+            this.$store.dispatch('deleteProduct', id)
+              .then(({ data }) => {
+                this.fetchProducts()
+                Toast.fire({
+                  icon: 'success',
+                  title: data.msg
+                })
+              })
+              .catch(err => {
+                Swal.fire({
+                  icon: 'error',
+                  title: err.response.data.msg
+                })
+              })
+          }
         })
     }
   },
@@ -74,7 +74,7 @@ export default {
     this.fetchProducts()
   },
   beforeRouteEnter (to, from, next) {
-    if (from.name !== 'Dashboard') next()
+    if (from.name !== 'Dashboard' && localStorage.access_token) next()
   }
 }
 </script>

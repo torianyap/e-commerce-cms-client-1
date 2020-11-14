@@ -58,6 +58,7 @@
 
 <script>
 import Swal from 'sweetalert2'
+import Toast from '../config/swal'
 
 export default {
   name: 'EditProduct',
@@ -75,6 +76,10 @@ export default {
       this.$store.dispatch('editProduct', payload)
         .then(({ data }) => {
           this.$router.push({ name: 'Dashboard' })
+          Toast.fire({
+            icon: 'success',
+            title: 'Product has been updated'
+          })
         })
         .catch((err) => {
           if (err.response) {

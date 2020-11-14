@@ -34,18 +34,7 @@
 
 <script>
 import Swal from 'sweetalert2'
-
-const Toast = Swal.mixin({
-  toast: true,
-  position: 'top-end',
-  showConfirmButton: false,
-  timer: 3000,
-  timerProgressBar: true,
-  didOpen: (toast) => {
-    toast.addEventListener('mouseenter', Swal.stopTimer)
-    toast.addEventListener('mouseleave', Swal.resumeTimer)
-  }
-})
+import Toast from '../config/swal'
 
 export default {
   name: 'LoginPage',
@@ -80,7 +69,15 @@ export default {
     }
   },
   beforeRouteEnter (to, from, next) {
-    if (from.name !== 'Login') next()
+    if (from.name !== 'Login' && !localStorage.access_token) {
+      next()
+    } else if (localStorage.access_token) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Please logout first'
+      })
+      next('/dashboard')
+    }
   }
 }
 

@@ -24,18 +24,7 @@
 <script>
 import BannerRow from '../components/BannerRow'
 import Swal from 'sweetalert2'
-
-const Toast = Swal.mixin({
-  toast: true,
-  position: 'top-end',
-  showConfirmButton: false,
-  timer: 3000,
-  timerProgressBar: true,
-  didOpen: (toast) => {
-    toast.addEventListener('mouseenter', Swal.stopTimer)
-    toast.addEventListener('mouseleave', Swal.resumeTimer)
-  }
-})
+import Toast from '../config/swal'
 
 export default {
   name: 'BannerPage',
@@ -44,20 +33,32 @@ export default {
       this.$store.dispatch('fetchBanners')
     },
     deleteBanner (id) {
-      this.$store.dispatch('deleteBanner', id)
-        .then(({ data }) => {
-          this.fetchBanners()
-          Toast.fire({
-            icon: 'success',
-            title: data.msg
-          })
-        })
-        .catch(({ response }) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Something Went Wrong..',
-            text: response.data.msg
-          })
+      Swal.fire({
+        icon: 'warning',
+        title: 'Are you sure ?',
+        text: 'This banner will be deleted.',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        cancelButtonColor: '#DC3545'
+      })
+        .then((result) => {
+          if (result.isConfirmed) {
+            this.$store.dispatch('deleteBanner', id)
+              .then(({ data }) => {
+                this.fetchBanners()
+                Toast.fire({
+                  icon: 'success',
+                  title: data.msg
+                })
+              })
+              .catch(({ response }) => {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Something Went Wrong..',
+                  text: response.data.msg
+                })
+              })
+          }
         })
     }
   },

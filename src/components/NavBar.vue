@@ -21,13 +21,32 @@
 </template>
 
 <script>
+import Swal from 'sweetalert2'
+import Toast from '../config/swal'
+
 export default {
   name: 'NavBar',
   methods: {
     logout () {
-      localStorage.clear()
-      this.$router.push({ name: 'Login' })
-      this.$store.commit('loggedIn', false)
+      Swal.fire({
+        icon: 'warning',
+        title: 'You will be logged out',
+        text: 'Are you sure ?',
+        showCancelButton: true,
+        confirmButtonText: 'Logout',
+        cancelButtonColor: '#DC3545'
+      })
+        .then((res) => {
+          if (res.isConfirmed) {
+            localStorage.clear()
+            this.$router.push({ name: 'Login' })
+            this.$store.commit('loggedIn', false)
+            Toast.fire({
+              icon: 'success',
+              title: 'Logged Out.'
+            })
+          }
+        })
     }
   },
   computed: {
